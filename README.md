@@ -39,21 +39,19 @@ A premium football tournament registration and management platform for tech prof
 
 2. **Configure environment**
 
-   Copy `.env.example` to `.env` and fill in your values:
+   Copy `.env.example` to `.env` for **local development only**:
 
    ```bash
    cp .env.example .env
    ```
 
-   | Variable | Description |
-   | -------- | ----------- |
-   | `DATABASE_URL` | MongoDB connection string |
-   | `PAYSTACK_SECRET_KEY` | Paystack secret key |
-   | `NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY` | Paystack public key |
-   | `ADMIN_PASSWORD` | Admin dashboard password |
-   | `ADMIN_SESSION_SECRET` | Random string for session signing |
-   | `NEXT_PUBLIC_APP_URL` | App URL (e.g. `http://localhost:3000`) |
-   | `REGISTRATION_FEE` | Fee in kobo (150000 = ₦1,500) |
+   | Variable | Local (`.env`) | Production (Vercel) |
+   | -------- | -------------- | ------------------- |
+   | `DATABASE_URL` | `mongodb://localhost:27017/tech_turf_tournament` | MongoDB Atlas `mongodb+srv://...` URL |
+   | `NEXT_PUBLIC_APP_URL` | `http://localhost:3000` | `https://your-app.vercel.app` |
+   | Other vars | Same keys in both environments | Set in Vercel dashboard |
+
+   The app picks the right database automatically: **localhost in dev**, **Atlas on Vercel**. Never put your Atlas URL in `.env` — keep prod secrets in Vercel only.
 
 3. **Start MongoDB**
 
@@ -91,42 +89,7 @@ Navigate to `/admin` and sign in with your `ADMIN_PASSWORD`.
 
 ## Deploying to Vercel
 
-The build succeeds without a database, but **pages crash at runtime** if MongoDB is not configured. Vercel cannot use `localhost` — you need **MongoDB Atlas** (free tier works).
-
-### 1. MongoDB Atlas
-
-1. Create a cluster at [mongodb.com/atlas](https://www.mongodb.com/atlas).
-2. **Database Access** — create a database user (username + password).
-3. **Network Access** — add `0.0.0.0/0` (allow from anywhere) so Vercel can connect.
-4. **Connect** → Drivers → copy the connection string and replace `<password>` with your user password.
-5. Add a database name before the `?`, e.g.:
-   ```
-   mongodb+srv://user:pass@cluster0.xxxxx.mongodb.net/tech_turf_tournament?retryWrites=true&w=majority
-   ```
-
-### 2. Seed Atlas (once)
-
-From your machine, point at Atlas and seed:
-
-```bash
-DATABASE_URL="mongodb+srv://..." npm run db:seed
-```
-
-### 3. Vercel environment variables
-
-In **Vercel → Project → Settings → Environment Variables**, add:
-
-| Variable | Value |
-| -------- | ----- |
-| `DATABASE_URL` | Your Atlas connection string (required) |
-| `PAYSTACK_SECRET_KEY` | Paystack secret key |
-| `NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY` | Paystack public key |
-| `ADMIN_PASSWORD` | Admin login password |
-| `ADMIN_SESSION_SECRET` | Long random string |
-| `NEXT_PUBLIC_APP_URL` | `https://your-app.vercel.app` |
-| `REGISTRATION_FEE` | `150000` |
-
-Redeploy after saving env vars (**Deployments → … → Redeploy**).
+Set the same environment variables in **Vercel → Settings → Environment Variables**. Use your MongoDB Atlas `DATABASE_URL` on Vercel (not localhost). Seed Atlas once with `DATABASE_URL="mongodb+srv://..." npm run db:seed`.
 
 ## Project Structure
 

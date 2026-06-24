@@ -56,11 +56,11 @@ export async function getTournamentSettings(): Promise<ITournamentSettings> {
     return {
       _id: String(existing._id),
       registrationOpen: existing.registrationOpen,
-      registrationDeadline: existing.registrationDeadline,
+      registrationDeadline: new Date(existing.registrationDeadline),
       registrationFee: existing.registrationFee,
       tournamentName: existing.tournamentName,
       tournamentTagline: existing.tournamentTagline,
-      updatedAt: existing.updatedAt,
+      updatedAt: new Date(existing.updatedAt),
     };
   }
 
